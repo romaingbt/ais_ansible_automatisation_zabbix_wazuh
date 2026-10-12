@@ -1,0 +1,30 @@
+---
+- name: Preparation du serveur Zabbix
+  hosts: monitoring
+  become: yes
+  tasks:
+    - name: Mise a jour du cache apt
+      apt:
+        update_cache: yes
+
+    - name: Installation des outils de base
+      apt:
+        name:
+          - wget
+          - gnupg
+          - vim
+          - curl
+        state: present
+
+    - name: Telechargement du repo officiel zabbix 7.0
+      get_url:
+        url: "https://repo.zabbix.com/zabbix/7.0/debian/pool/main/z/zabbix-release/zabbix-release_latest+debian12_all.deb"
+        dest: /tmp/zabbix_repo.deb
+
+    - name: Installation du repo Zabbix
+      apt:
+        deb: /tmp/zabbix_repo.deb
+
+    - name: Mise a jour du cache apres ajout du repo
+      apt:
+        update_cache: yes
