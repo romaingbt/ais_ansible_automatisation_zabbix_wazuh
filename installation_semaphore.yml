@@ -1,0 +1,30 @@
+---
+- name: Installation de Semaphore UI
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Installation des dependances (curl, git, wget)
+      apt:
+        name:
+          - curl
+          - git
+          - wget
+        state: present
+
+    - name: Telechargement du paquet Semaphore (Debian)
+      get_url:
+        url: "https://github.com/semaphoreui/semaphore/releases/download/v2.10.35/semaphore_2.10.35_linux_amd64.deb"
+        dest: /tmp/semaphore.deb
+
+    - name: Installation du paquet deb Semaphore
+      apt:
+        deb: /tmp/semaphore.deb
+
+    - name: Verifier l'installation et afficher la version
+      command: semaphore version
+      register: sem_version
+      changed_when: false
+
+    - name: Afficher la version de Semaphore installee
+      debug:
+        msg: "Semaphore version {{ sem_version.stdout }} est installe"
